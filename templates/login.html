@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SentinelLedger | Login</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #e5edf8;
+            background:
+                radial-gradient(circle at 15% 15%, #12304a 0, transparent 35%),
+                radial-gradient(circle at 85% 85%, #102b40 0, transparent 35%),
+                #08111f;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .brand-icon {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #1e7890;
+            border-radius: 16px;
+            background: #102b40;
+            color: #4dd8f0;
+            font-size: 27px;
+            font-weight: 700;
+            box-shadow: 0 0 28px rgba(34, 211, 238, 0.08);
+        }
+
+        .brand h1 {
+            font-size: 29px;
+            font-weight: 700;
+            letter-spacing: -0.7px;
+        }
+
+        .brand h1 span {
+            color: #43c9e8;
+        }
+
+        .brand p {
+            margin-top: 9px;
+            color: #8da3ba;
+            font-size: 13px;
+            letter-spacing: 0.3px;
+        }
+
+        .login-card {
+            padding: 34px;
+            border: 1px solid #23364c;
+            border-radius: 18px;
+            background: rgba(15, 27, 44, 0.96);
+            box-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+        }
+
+        .login-card h2 {
+            font-size: 23px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            margin-bottom: 28px;
+            color: #8da3ba;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .message {
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            border: 1px solid #85434b;
+            border-radius: 8px;
+            background: #351d2a;
+            color: #ffb8c0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 21px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 9px;
+            color: #d6e2ef;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #30445b;
+            border-radius: 9px;
+            outline: none;
+            background: #0a1626;
+            color: #f1f5f9;
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input::placeholder {
+            color: #60758c;
+        }
+
+        input:focus {
+            border-color: #36bfdc;
+            box-shadow: 0 0 0 3px rgba(54, 191, 220, 0.12);
+        }
+
+        .login-button {
+            width: 100%;
+            margin-top: 5px;
+            padding: 13px;
+            border: none;
+            border-radius: 9px;
+            background: #20b6d2;
+            color: #061521;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .login-button:hover {
+            background: #48d0e8;
+            transform: translateY(-1px);
+        }
+
+        .security-note {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+            color: #8197ad;
+            font-size: 12px;
+        }
+
+        .security-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #36c99a;
+            box-shadow: 0 0 8px rgba(54, 201, 154, 0.35);
+        }
+
+        .footer {
+            margin-top: 24px;
+            text-align: center;
+            color: #60758c;
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 26px 22px;
+            }
+
+            .brand h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="login-container">
+
+        <header class="brand">
+            <div class="brand-icon">S</div>
+            <h1>Sentinel<span>Ledger</span></h1>
+            <p>SECURE AUDIT &amp; THREAT MONITORING</p>
+        </header>
+
+        <section class="login-card">
+            <h2>Welcome back</h2>
+            <p class="subtitle">
+                Sign in to access your security dashboard.
+            </p>
+
+            {% with messages = get_flashed_messages() %}
+                {% for message in messages %}
+                    <div class="message">{{ message }}</div>
+                {% endfor %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <input type="hidden" name="csrf_token"
+                       value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input
+                        id="username"
+                        name="username"
+                        type="text"
+                        placeholder="Enter your username"
+                        required
+                        autocomplete="username"
+                        autofocus
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+
+                <button class="login-button" type="submit">
+                    Sign in securely →
+                </button>
+            </form>
+
+            <div class="security-note">
+                <span class="security-dot"></span>
+                Protected access to SentinelLedger
+            </div>
+        </section>
+
+        <footer class="footer">
+            SentinelLedger &copy; 2026
+        </footer>
+
+    </main>
+</body>
+</html>

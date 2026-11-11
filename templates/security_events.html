@@ -1,0 +1,564 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Events | SentinelLedger</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background: #0b1220;
+            color: #e2e8f0;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            color: #38bdf8;
+            font-size: 30px;
+        }
+
+        .subtitle {
+            margin: 0;
+            color: #94a3b8;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 16px;
+            border: 1px solid transparent;
+            border-radius: 7px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background: #0284c7;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: #0369a1;
+        }
+
+        .btn-secondary {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-color: #334155;
+        }
+
+        .btn-secondary:hover {
+            background: #334155;
+        }
+
+        .filter-panel {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-form {
+            display: flex;
+            align-items: end;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        label {
+            color: #cbd5e1;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            background: #0f172a;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: 1px solid #38bdf8;
+            border-color: #38bdf8;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        .record-count {
+            color: #94a3b8;
+            font-size: 14px;
+            margin: 18px 0;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th,
+        td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #172235;
+            color: #38bdf8;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+
+        td {
+            color: #cbd5e1;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+
+        tbody tr:hover {
+            background: #263449;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .severity {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .severity.low {
+            background: #14532d;
+            color: #86efac;
+        }
+
+        .severity.medium {
+            background: #713f12;
+            color: #fde047;
+        }
+
+        .severity.high {
+            background: #7f1d1d;
+            color: #fca5a5;
+        }
+
+        .severity.critical {
+            background: #991b1b;
+            color: #ffffff;
+        }
+
+        .action-links {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-links a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .action-links a:hover {
+            text-decoration: underline;
+        }
+
+        .resolve-form {
+            display: inline;
+            margin: 0;
+        }
+
+
+
+        .resolve-btn {
+            padding: 7px 11px;
+            border: 1px solid #7f1d1d;
+            border-radius: 6px;
+            background: #451a1a;
+            color: #fca5a5;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .resolve-btn:hover {
+            background: #7f1d1d;
+            color: #fee2e2;
+        }
+
+
+        .resolved-text {
+            color: #4ade80;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+
+
+        .empty-message {
+            padding: 30px;
+            text-align: center;
+            color: #94a3b8;
+        }
+
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin: 24px 0;
+            flex-wrap: wrap;
+        }
+
+        .pagination-info {
+            color: #9ca3af;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .pagination-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #2563eb;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .page-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .page-btn.disabled {
+            background: #1e293b;
+            color: #64748b;
+            border: 1px solid #334155;
+            cursor: not-allowed;
+        }
+
+
+        .footer {
+            margin-top: 35px;
+            padding-top: 18px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px;
+            }
+
+            .page-header {
+                align-items: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+
+            .header-actions .btn {
+                flex: 1;
+            }
+
+            .pagination {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header class="page-header">
+        <div>
+            <h1>SentinelLedger</h1>
+            <p class="subtitle">Security Events / Threat Monitoring</p>
+        </div>
+
+        <div class="header-actions">
+            <a class="btn btn-secondary" href="/">
+                ← Dashboard
+            </a>
+
+            <a class="btn btn-primary" href="/events/create">
+                + Create Security Event
+            </a>
+        </div>
+    </header>
+
+    <section class="filter-panel">
+        <form method="GET" action="/events" class="filter-form">
+
+            <div class="form-group">
+                <label for="q">Search events</label>
+                <input
+                    type="text"
+                    name="q"
+                    id="q"
+                    placeholder="Event type or description"
+                    value="{{ search_query }}"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="status">Event status</label>
+                <select name="status" id="status">
+                    <option value="ALL"
+                        {% if selected_status == "ALL" %}selected{% endif %}>
+                        All Events
+                    </option>
+                    <option value="OPEN"
+                        {% if selected_status == "OPEN" %}selected{% endif %}>
+                        Open Alerts
+                    </option>
+                    <option value="OTHER"
+                        {% if selected_status == "OTHER" %}selected{% endif %}>
+                        Other Statuses
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="severity">Severity</label>
+                <select name="severity" id="severity">
+                    <option value="ALL"
+                        {% if selected_severity == "ALL" %}selected{% endif %}>
+                        All Severities
+                    </option>
+                    <option value="LOW"
+                        {% if selected_severity == "LOW" %}selected{% endif %}>
+                        Low
+                    </option>
+                    <option value="MEDIUM"
+                        {% if selected_severity == "MEDIUM" %}selected{% endif %}>
+                        Medium
+                    </option>
+                    <option value="HIGH"
+                        {% if selected_severity == "HIGH" %}selected{% endif %}>
+                        High
+                    </option>
+                    <option value="CRITICAL"
+                        {% if selected_severity == "CRITICAL" %}selected{% endif %}>
+                        Critical
+                    </option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Apply Filters
+            </button>
+
+        </form>
+    </section>
+
+    <p class="record-count">
+        Records displayed: {{ events|length }}
+    </p>
+
+    <div class="table-container">
+        <table>
+            {% if events %}
+            <thead>
+                <tr>
+                    {% for column in events[0].keys() %}
+                    <th>{{ column }}</th>
+                    {% endfor %}
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    {% for column, value in event.items() %}
+                    <td>
+                        {% if column == 'severity' %}
+                            <span class="severity {{ value|lower }}">
+                                {{ value }}
+                            </span>
+                        {% else %}
+                            {{ value if value is not none else '-' }}
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+
+                    <td>
+                        <div class="action-links">
+                            <a href="{{ url_for('event_details', event_id=event.event_id) }}">
+                                View Details
+                            </a>
+
+                            {% if event.status == 'OPEN' %}
+                            <form
+                                class="resolve-form"
+                                method="POST"
+                                action="{{ url_for('resolve_security_event', event_id=event.event_id) }}"
+                                onsubmit="return confirm('Are you sure you want to resolve this security event?');"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="csrf_token"
+                                    value="{{ csrf_token() }}"
+                                >
+                                <button type="submit" class="resolve-btn">
+                                    Resolve
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="resolved-text">Resolved</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+            {% else %}
+            <tbody>
+                <tr>
+                    <td colspan="20" class="empty-message">
+                        No security events found.
+                    </td>
+                </tr>
+            </tbody>
+            {% endif %}
+        </table>
+    </div>
+
+
+    <nav class="pagination" aria-label="Security event pagination">
+
+        <div class="pagination-actions">
+            {% if page > 1 %}
+            <a class="page-btn"
+            href="{{ url_for('security_events',
+                page=page-1,
+                q=search_query,
+                status=selected_status,
+                severity=selected_severity) }}">
+                ← Previous
+            </a>
+            {% else %}
+            <span class="page-btn disabled">← Previous</span>
+            {% endif %}
+        </div>
+
+        <div class="pagination-info">
+            Showing {{ events|length }} events · Page
+            <strong>{{ page }}</strong> of
+            <strong>{{ total_pages }}</strong>
+            ({{ total_events }} total)
+        </div>
+
+        <div class="pagination-actions">
+            {% if page < total_pages %}
+            <a class="btn btn-primary"
+            href="{{ url_for('security_events',
+                page=page+1,
+                q=search_query,
+                status=selected_status,
+                severity=selected_severity) }}">
+                Next →
+            </a>
+            {% else %}
+            <span class="btn btn-disabled">Next →</span>
+            {% endif %}
+        </div>
+
+    </nav>
+
+
+    <footer class="footer">
+        SentinelLedger · Security event and threat monitoring
+    </footer>
+
+</div>
+</body>
+</html>

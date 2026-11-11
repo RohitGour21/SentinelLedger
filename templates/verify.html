@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Chain Verification | SentinelLedger</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 40px;
+        }
+        .card {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 28px;
+            background: #1e293b;
+            border-radius: 12px;
+        }
+        .valid { color: #4ade80; }
+        .invalid { color: #f87171; }
+        a { color: #38bdf8; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Audit Chain Verification</h1>
+
+        {% if result.valid %}
+            <h2 class="valid">Integrity Verified</h2>
+        {% else %}
+            <h2 class="invalid">Integrity Check Failed</h2>
+        {% endif %}
+
+        <p>{{ result.message }}</p>
+
+        {% if result.total_logs is defined %}
+            <p>Total logs checked: {{ result.total_logs }}</p>
+        {% endif %}
+
+        {% if result.log_id is defined %}
+            <p>Problem detected at log ID: {{ result.log_id }}</p>
+        {% endif %}
+
+        <p><a href="/">← Back to Dashboard</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: sentinel-ledger
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    # One worker: SQLite is a single file, so avoid multiple processes writing.
+    startCommand: gunicorn wsgi:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      # Set these two/three in the Render dashboard (values are never stored in Git).
+      - key: INITIAL_ADMIN_USERNAME
+        sync: false
+      - key: INITIAL_ADMIN_EMAIL
+        sync: false
+      - key: INITIAL_ADMIN_PASSWORD
+        sync: false

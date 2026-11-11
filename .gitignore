@@ -1,0 +1,17 @@
+venv/
+.venv/
+env/
+__pycache__/
+.env
+.env.*
+!.env.example
+*.pyc
+
+# SQLite database files
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+instance/

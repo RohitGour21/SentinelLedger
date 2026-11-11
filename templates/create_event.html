@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Security Event | SentinelLedger</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 30px;
+        }
+        .card {
+            max-width: 520px;
+            margin: 30px auto;
+            padding: 25px;
+            background: #1e293b;
+            border-radius: 12px;
+        }
+        label {
+            display: block;
+            margin-top: 16px;
+        }
+        input, select, textarea {
+            box-sizing: border-box;
+            width: 100%;
+            margin-top: 8px;
+            padding: 11px;
+            border-radius: 6px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+        button {
+            margin-top: 20px;
+            padding: 12px 18px;
+            background: #0284c7;
+            color: white;
+            border: 0;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .error { color: #f87171; }
+        a { color: #38bdf8; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Create Security Event</h1>
+        <p>Record a test alert in SentinelLedger.</p>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label for="event_type">Event Type</label>
+            <input
+                id="event_type"
+                name="event_type"
+                type="text"
+                maxlength="100"
+                placeholder="e.g. SUSPICIOUS_LOGIN"
+                required
+            >
+
+            <label for="severity">Severity</label>
+            <select id="severity" name="severity" required>
+                <option value="">Select severity</option>
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+                <option value="CRITICAL">Critical</option>
+            </select>
+
+            <label for="description">Description</label>
+            <textarea
+                id="description"
+                name="description"
+                rows="4"
+                maxlength="5000"
+                placeholder="Describe the test event"
+            ></textarea>
+
+            <button type="submit">Create Event</button>
+        </form>
+
+        <p><a href="/events">Back to Security Events</a></p>
+    </div>
+</body>
+</html>

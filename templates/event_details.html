@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Event Details | SentinelLedger</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #f8fafc;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 28px;
+        }
+
+        .panel {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .field {
+            padding-bottom: 14px;
+            border-bottom: 1px solid #334155;
+            overflow-wrap: anywhere;
+        }
+
+        .label {
+            display: block;
+            color: #94a3b8;
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .value {
+            color: #f1f5f9;
+            font-size: 15px;
+        }
+
+        .description {
+            grid-column: 1 / -1;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .high, .critical {
+            color: #fca5a5;
+            background: #451a24;
+        }
+
+        .medium {
+            color: #fcd34d;
+            background: #422c12;
+        }
+
+        .low {
+            color: #86efac;
+            background: #143426;
+        }
+
+        .open {
+            color: #fcd34d;
+            background: #422c12;
+        }
+
+        .resolved {
+            color: #86efac;
+            background: #143426;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 24px;
+            padding: 10px 16px;
+            border-radius: 6px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            background: #1d4ed8;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 16px;
+            }
+
+            .details {
+                grid-template-columns: 1fr;
+            }
+
+            .description {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Security Event Details</h1>
+        <p class="subtitle">
+            SentinelLedger / Event #{{ event.event_id }}
+        </p>
+
+        <section class="panel">
+            <div class="details">
+
+                <div class="field">
+                    <span class="label">Event ID</span>
+                    <span class="value">{{ event.event_id }}</span>
+                </div>
+
+                <div class="field">
+                    <span class="label">Event Type</span>
+                    <span class="value">{{ event.event_type }}</span>
+                </div>
+
+                <div class="field">
+                    <span class="label">Severity</span>
+                    <span class="badge {{ event.severity|lower }}">
+                        {{ event.severity }}
+                    </span>
+                </div>
+
+                <div class="field">
+                    <span class="label">Status</span>
+                    <span class="badge {{ event.status|lower }}">
+                        {{ event.status }}
+                    </span>
+                </div>
+
+                <div class="field description">
+                    <span class="label">Description</span>
+                    <span class="value">
+                        {{ event.description or 'No description available.' }}
+                    </span>
+                </div>
+
+                <div class="field">
+                    <span class="label">Rule ID</span>
+                    <span class="value">
+                        {{ event.rule_id if event.rule_id is not none else '-' }}
+                    </span>
+                </div>
+
+                <div class="field">
+                    <span class="label">Related Audit Log ID</span>
+                    <span class="value">
+                        {{ event.log_id if event.log_id is not none else '-' }}
+                    </span>
+                </div>
+
+                <div class="field">
+                    <span class="label">Detected At</span>
+                    <span class="value">{{ event.detected_at or '-' }}</span>
+                </div>
+
+            </div>
+        </section>
+
+        
+        {% if event.status == 'OPEN' %}
+        <form method="POST"
+            action="{{ url_for('resolve_security_event', event_id=event.event_id) }}"
+            style="display: inline-block; margin-top: 24px;">
+
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <button type="submit"
+                    style="padding: 10px 16px; background: #15803d;
+                        color: white; border: none; border-radius: 6px;
+                        cursor: pointer;">
+                Resolve Event
+            </button>
+        </form>
+        {% else %}
+        <p style="color: #86efac; margin-top: 24px;">
+            This event has already been resolved.
+        </p>
+        {% endif %}
+
+        <a href="{{ url_for('security_events') }}" class="back-link">
+            ← Back to Security Events
+        </a>
+        
+    </div>
+</body>
+</html>

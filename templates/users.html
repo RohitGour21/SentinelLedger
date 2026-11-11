@@ -1,0 +1,502 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>User Management - SentinelLedger</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 32px;
+            font-family: Arial, sans-serif;
+            background: #0b1120;
+            color: #e2e8f0;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        h1 {
+            margin: 0;
+            color: #38bdf8;
+            font-size: 30px;
+        }
+
+        .subtitle {
+            margin-top: 8px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .button {
+            display: inline-block;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 11px 15px;
+            color: #e2e8f0;
+            background: #172338;
+            text-decoration: none;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .button:hover {
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+
+        .primary {
+            background: #075985;
+            border-color: #0284c7;
+            color: white;
+        }
+
+        .primary:hover {
+            background: #0369a1;
+            color: white;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 26px;
+        }
+
+        .stat-card {
+            background: #111c30;
+            border: 1px solid #26354c;
+            border-top: 3px solid #38bdf8;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #f1f5f9;
+        }
+
+        .panel {
+            background: #111c30;
+            border: 1px solid #26354c;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid #26354c;
+            background: #142036;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .panel-header p {
+            margin: 7px 0 0;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 950px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 16px;
+            border-bottom: 1px solid #26354c;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #142036;
+            color: #94a3b8;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        td {
+            color: #dbe4f0;
+        }
+
+        tbody tr:hover {
+            background: #16243a;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .user-id {
+            color: #7dd3fc;
+            font-weight: bold;
+        }
+
+        .role-badge, .status-badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .role-admin {
+            background: #3b1d52;
+            color: #d8b4fe;
+        }
+
+        .role-analyst {
+            background: #123b5b;
+            color: #7dd3fc;
+        }
+
+        .role-viewer {
+            background: #293449;
+            color: #cbd5e1;
+        }
+
+        .active-status {
+            background: #143426;
+            color: #86efac;
+        }
+
+        .inactive-status {
+            background: #451a24;
+            color: #fca5a5;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            min-width: 150px;
+        }
+
+        .actions form {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin: 0;
+        }
+
+        select {
+            background: #0b1120;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 8px;
+            max-width: 160px;
+        }
+
+        button {
+            border: 1px solid #0369a1;
+            border-radius: 6px;
+            padding: 8px 10px;
+            background: #075985;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: #0369a1;
+        }
+
+        .deactivate {
+            background: #451a24;
+            border-color: #991b1b;
+            color: #fca5a5;
+        }
+
+        .deactivate:hover {
+            background: #7f1d1d;
+        }
+
+        .activate {
+            background: #143426;
+            border-color: #166534;
+            color: #86efac;
+        }
+
+        .activate:hover {
+            background: #14532d;
+        }
+
+        .current-account {
+            display: inline-block;
+            padding: 8px 10px;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .message {
+            padding: 13px 16px;
+            margin-bottom: 12px;
+            background: #123b5b;
+            color: #bae6fd;
+            border: 1px solid #075985;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #94a3b8;
+        }
+
+        .footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 12px;
+            margin-top: 24px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header>
+        <div>
+            <h1>SentinelLedger</h1>
+            <div class="subtitle">
+                User Management / Access Control
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <a class="button" href="{{ url_for('home') }}">
+                ← Dashboard
+            </a>
+            <a class="button primary" href="{{ url_for('logout') }}">
+                Logout
+            </a>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-label">Registered Accounts</div>
+            <div class="stat-value">{{ users|length }}</div>
+        </div>
+
+        <div class="stat-card" style="border-top-color: #34d399;">
+            <div class="stat-label">Active Accounts</div>
+            <div class="stat-value">
+                {{ users|selectattr('is_active')|list|length }}
+            </div>
+        </div>
+
+        <div class="stat-card" style="border-top-color: #f87171;">
+            <div class="stat-label">Inactive Accounts</div>
+            <div class="stat-value">
+                {{ users|rejectattr('is_active')|list|length }}
+            </div>
+        </div>
+
+        <div class="stat-card" style="border-top-color: #a78bfa;">
+            <div class="stat-label">Available Roles</div>
+            <div class="stat-value">{{ roles|length }}</div>
+        </div>
+    </div>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>Registered Users</h2>
+            <p>Manage account roles and access status.</p>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td class="user-id">#{{ user.user_id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+
+                        <td>
+                            {% if user.role_name == 'Admin' %}
+                                <span class="role-badge role-admin">
+                                    Admin
+                                </span>
+                            {% elif user.role_name == 'Security Analyst' %}
+                                <span class="role-badge role-analyst">
+                                    Security Analyst
+                                </span>
+                            {% else %}
+                                <span class="role-badge role-viewer">
+                                    {{ user.role_name }}
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if user.is_active %}
+                                <span class="status-badge active-status">
+                                    ● Active
+                                </span>
+                            {% else %}
+                                <span class="status-badge inactive-status">
+                                    ● Inactive
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ user.created_at }}</td>
+
+                        <td>
+                            <div class="actions">
+                                {% if user.user_id != session.get("user_id") %}
+
+                                <form method="POST"
+                                      action="{{ url_for('manage_users') }}">
+                                    <input type="hidden" name="csrf_token"
+                                           value="{{ csrf_token() }}">
+                                    <input type="hidden" name="user_id"
+                                           value="{{ user.user_id }}">
+                                    <input type="hidden" name="action"
+                                           value="change_role">
+
+                                    <select name="role_id" required
+                                            aria-label="Select role for {{ user.username }}">
+                                        {% for role in roles %}
+                                        <option value="{{ role.role_id }}"
+                                            {% if role.role_id == user.role_id %}
+                                                selected
+                                            {% endif %}>
+                                            {{ role.role_name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <button type="submit">Update Role</button>
+                                </form>
+
+                                <form method="POST"
+                                      action="{{ url_for('manage_users') }}">
+                                    <input type="hidden" name="csrf_token"
+                                           value="{{ csrf_token() }}">
+                                    <input type="hidden" name="user_id"
+                                           value="{{ user.user_id }}">
+                                    <input type="hidden" name="action"
+                                           value="toggle_status">
+
+                                    {% if user.is_active %}
+                                        <input type="hidden" name="is_active"
+                                               value="0">
+                                        <button type="submit" class="deactivate">
+                                            Deactivate
+                                        </button>
+                                    {% else %}
+                                        <input type="hidden" name="is_active"
+                                               value="1">
+                                        <button type="submit" class="activate">
+                                            Activate
+                                        </button>
+                                    {% endif %}
+                                </form>
+
+                                {% else %}
+                                    <span class="current-account">
+                                        Current account
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="empty">
+                            No users found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="footer">
+        SentinelLedger · Secure User &amp; Access Management
+    </div>
+
+</div>
+</body>
+</html>
