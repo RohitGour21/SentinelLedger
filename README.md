@@ -182,34 +182,48 @@ External integration is optional. SentinelLedger operates independently without 
 
 ```text
 SentinelLedger/
-│
-├── app.py
-├── wsgi.py
-├── config.py
-├── requirements.txt
-├── .env.example
-├── .gitignore
-├── render.yaml
+├── app.py                      # Flask app: routes, role checks, dashboard logic
+├── wsgi.py                     # Production entry point (gunicorn wsgi:app)
+├── requirements.txt            # Python dependencies
+├── render.yaml                 # Render deployment blueprint
+├── .env.example                # Template for environment variables
+├── .gitignore                  # Excludes .env, venv, databases, caches
+├── README.md
 │
 ├── app/
-│   ├── db.py
+│   ├── __init__.py
+│   ├── db.py                   # SQLite connection, schema set-up, start-up admin/users
 │   └── services/
-│       ├── audit_service.py
-│       ├── hash_service.py
-│       ├── auth_service.py
-│       ├── user_service.py
-│       ├── threat_detector.py
-│       └── api_monitor.py
+│       ├── __init__.py
+│       ├── audit_service.py    # Creates hash-chained audit log entries
+│       ├── hash_service.py     # Verifies the audit chain
+│       ├── auth_service.py     # Registration and authentication
+│       ├── user_service.py     # Role and account-status management
+│       ├── threat_detector.py  # Repeated failed-login rule
+│       └── api_monitor.py      # Excessive API request rule
 │
 ├── database/
-│   ├── schema.sql
-│   └── schema_mysql.sql
+│   ├── schema.sql              # SQLite schema and default roles/rules
+│   └── schema_mysql.sql        # Original MySQL schema (reference only)
 │
 ├── templates/
-├── static/
+│   ├── login.html
+│   ├── index.html              # Dashboard
+│   ├── audit_logs.html
+│   ├── security_events.html
+│   ├── event_details.html
+│   ├── create_event.html
+│   ├── users.html
+│   └── verify.html
 │
-├── create_admin.py
-└── test_sqlite_e2e.py
+├── create_admin.py             # Create the first Admin (local use)
+├── create_viewer.py            # Create a sample Viewer account
+├── debug_hash.py               # Recalculate and compare one entry's hash
+│
+└── test_sqlite_e2e.py          # Full test suite (uses a temporary database)
+    test_audit.py, test_verify.py, test_threat_detector.py,
+    test_auto_detection.py, test_api_monitor.py, test_db.py, test_app_db.py
+                                # Small helper/test scripts
 ```
 
 *This is an overview of the main project components. Refer to the repository for the complete file structure.*
