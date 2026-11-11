@@ -107,6 +107,64 @@ def _create_initial_admin():
           if success else f"INITIAL_ADMIN: failed - {message}", flush=True)
 
 
+def _create_initial_users():
+    """Optional: create extra users from the INITIAL_USERS variable.
+
+    Format: username|role|email|password, entries separated by ';'
+    role is Admin, Security Analyst or Viewer (or a role_id number).
+    Existing usernames/emails are skipped. Passwords are never logged.
+    """
+    raw = os.getenv("INITIAL_USERS", "").strip()
+    if not raw:
+        return
+
+    connection = _connect()
+    try:
+        roles = {
+            row["role_name"].lower(): row["role_id"]
+            for row in connection.execute(
+                "SELECT role_id, role_name FROM roles"
+            ).fetchall()
+        }
+    finally:
+        connection.close()
+
+    from app.services.auth_service import register_user
+
+    for entry in raw.split(";"):
+        entry = entry.strip()
+        if not entry:
+            continue
+
+        parts = [part.strip() for part in entry.split("|")]
+        if len(parts) != 4:
+            print("INITIAL_USERS: skipped an entry - expected "
+                  "username|role|email|password", flush=True)
+            continue
+
+        username, role, email, password = parts
+        role_id = roles.get(role.lower())
+        if role_id is None and role.isdigit():
+            role_id = int(role)
+
+        if not (username and email and password) or role_id is None:
+            print(f"INITIAL_USERS: skipped '{username}' - missing field "
+                  f"or unknown role '{role}'", flush=True)
+            continue
+
+        if len(password) < 12:
+            print(f"INITIAL_USERS: skipped '{username}' - password must "
+                  "be at least 12 characters", flush=True)
+            continue
+
+        success, message = register_user(
+            username, email, password, role_id=role_id
+        )
+        print(f"INITIAL_USERS: created '{username}'" if success
+              else f"INITIAL_USERS: '{username}' not created - {message}",
+              flush=True)
+
+
 def init_db():
     """Create tables and reference data if they do not exist."""
     with open(_SCHEMA_PATH, "r", encoding="utf-8") as schema_file:
@@ -130,5 +188,6 @@ def get_db_connection():
                 init_db()
                 _initialized_path = path
                 _create_initial_admin()
+                _create_initial_users()
 
     return _connect()
