@@ -328,19 +328,6 @@ Configure the required environment variables in Render and deploy the connected 
 
 ---
 
-## Testing
-
-The project includes test scripts for checking database operations, authentication, role permissions, audit logging, hash verification, and threat detection.
-
-Run the SQLite end-to-end test, if included in your repository:
-
-```bash
-python test_sqlite_e2e.py
-```
-
-Tests should be run in a development environment rather than against the live deployment.
-
----
 
 ## Project Objective
 
