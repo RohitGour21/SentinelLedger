@@ -77,16 +77,11 @@ def _create_initial_admin():
     password = os.getenv("INITIAL_ADMIN_PASSWORD", "")
 
     if not (username and email and password):
-        print("INITIAL_ADMIN: skipped - set INITIAL_ADMIN_USERNAME, "
-              "INITIAL_ADMIN_EMAIL and INITIAL_ADMIN_PASSWORD "
-              f"(username set: {bool(username)}, email set: "
-              f"{bool(email)}, password set: {bool(password)})",
-              flush=True)
         return
 
     if len(password) < 12:
         print("INITIAL_ADMIN_PASSWORD must be at least 12 characters; "
-              "initial Admin not created.", flush=True)
+              "initial Admin not created.")
         return
 
     connection = _connect()
@@ -98,13 +93,10 @@ def _create_initial_admin():
         connection.close()
 
     if total > 0:
-        print("INITIAL_ADMIN: skipped - users already exist.", flush=True)
         return
 
     from app.services.auth_service import register_user
-    success, message = register_user(username, email, password, role_id=1)
-    print(f"INITIAL_ADMIN: created username '{username}'"
-          if success else f"INITIAL_ADMIN: failed - {message}", flush=True)
+    register_user(username, email, password, role_id=1)
 
 
 def init_db():
